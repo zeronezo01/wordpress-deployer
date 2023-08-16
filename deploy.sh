@@ -13,7 +13,7 @@ function create_docker_network() {
 }
 
 function gen_mysql_pw() {
-    openssl rand -base64 16
+    cat /dev/urandom | tr -dc A-Za-z0-9 | head -c 16;echo
 }
 
 function deploy_mysql() {
@@ -21,7 +21,7 @@ function deploy_mysql() {
     mysql_root_pw=$(gen_mysql_pw)
     echo $mysql_root_pw > mysql_root_password
     docker pull mysql:${VERSION_MYSQL}
-    ID_MYSQL_CONTAINER=$(docker run -p 127.0.0.1:${PORT_LOCAL_MYSQL}:3306 --network ${NAME_DOCKER_NETWORK} --name ${NAME_MYSQL_CONTAINER} -e MYSQL_ROOT_PASSWORD=${my_root_pw} -d mysql:{VERSION_MYSQL})
+    ID_MYSQL_CONTAINER=$(docker run -p 127.0.0.1:${PORT_LOCAL_MYSQL}:3306 --network ${NAME_DOCKER_NETWORK} --name ${NAME_MYSQL_CONTAINER} -e MYSQL_ROOT_PASSWORD=${mysql_root_pw} -d mysql:${VERSION_MYSQL})
 
     # init wordpress database
     cp mysql/${NAME_SQL_FILE} ${NAME_SQL_FILE}
